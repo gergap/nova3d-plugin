@@ -21,21 +21,22 @@
 #ifndef __MAP_H__
 #define __MAP_H__
 
-struct map_el {
-    char *key;
-    char *value;
-};
+#include <stdbool.h>
 
+struct map_pair;
 struct map {
-    struct map_el **elements;
-    unsigned int num_elements;
+    struct map_pair *elements; /**< array of elements */
+    unsigned int size_elements; /**< array size */
+    unsigned int num_elements; /**< number of used elements */
+    bool sorted; /**< sorted state */
 };
 
 int map_init(struct map *m, unsigned int init_size);
-int map_cleanup(struct map *m);
+int map_clear(struct map *m);
 
 int map_add(struct map *m, const char *key, const char *value);
-const char *map_lookup(struct map *m, const char *key, const char *value);
+void map_sort(struct map *m);
+const char *map_lookup(struct map *m, const char *key);
 
 #endif /* __MAP_H__ */
 
