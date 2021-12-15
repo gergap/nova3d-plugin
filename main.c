@@ -51,6 +51,25 @@ static void chomp(char *str)
     }
 }
 
+/** Better version of strncat which ensures the string is terminated.
+ * @param dst The destination buffer.
+ * @param src The source string to copy. Must be zero terminated.
+ * @param dst_len Length of \c dst in bytes.
+ * @return Number of bytes copied on success excluding the terminating null byte, -1 if the string was truncated.
+ */
+static int strlcpy(char *dst, const char *src, size_t dst_len)
+{
+    size_t len = strlen(src);
+    if (len > (dst_len - 1)) {
+        memcpy(dst, src, dst_len - 1);
+        dst[dst_len - 1] = 0; /* terminate string */
+        return -1;
+    }
+    memcpy(dst, src, len + 1);
+
+    return len;
+}
+
 /** parses GCODE header parameter from Chitubox.
  * Syntax: ";<param>:<value>"
  */
@@ -197,14 +216,34 @@ int create_slice_conf(const char *dir)
     return 0;
 }
 
-/** Create Nova3d GCode */
-int create_gcode(const char *ofilename)
+/* My version of a basename function. It removes file extension and directories.
+ * E.g. "foo/bar.ext" -> "bar".
+ * This function modifies the filename and returns a pointer to the basename inside filename.
+ * Create a copy before calling this function.
+ */
+static char *my_basename(char *filename)
 {
+    char *ext = strrchr(filename, '.');
+    if (ext == NULL) return NULL;
+    *ext = 0; /* cut off extension */
+
+    /* find last slash */
+    ext = strrchr(filename, '/');
+    if (ext == NULL) return filename; /* there is no separator */
+    ext++;
+
+    return ext;
+}
+
+/** Create Nova3d GCode */
+int create_gcode(const char *tmpdir, const char *ofilename)
+{
+    char basename[PATH_MAX];
     char filename[PATH_MAX];
     FILE *f;
     time_t now = time(NULL);
     const char *timestamp = ctime(&now);
-    char *ext;
+    const char *projectname; /* used also in GCODE filename */
     unsigned int i;
     unsigned int wait_time;
     unsigned int num_slices        = param_uint("totalLayer");
@@ -213,23 +252,22 @@ int create_gcode(const char *ofilename)
     unsigned int speed_down        = param_uint("normalDropSpeed");
     float liftHeight               = param_float("normalLayerLiftHeight");
     float layerHeight              = param_float("layerHeight");
+    int ret;
 
     /* create GCode filename */
-    strncpy(filename, ofilename, sizeof(filename));
-    filename[PATH_MAX - 1] = 0;
-    /* change file extension */
-    ext = strrchr(filename, '.');
-    if (ext == NULL) {
-        fprintf(stderr, "error: invalid output filename '%s'.\n", ofilename);
-        return -1;
-    }
-    *ext = 0;
-    if (strlen(filename) >= (PATH_MAX - 7)) {
-        /* no place for .gcode\0 */
+    ret = strlcpy(basename, ofilename, sizeof(basename));
+    if (ret < 0) {
         fprintf(stderr, "error: filename too long.\n");
         return -1;
     }
-    strcat(filename, ".gcode");
+    projectname = my_basename(basename);
+
+    /* create gcode filename */
+    ret = snprintf(filename, sizeof(filename), "%s/%s.gcode", tmpdir, projectname);
+    if (ret >= (int)sizeof(filename)) {
+        fprintf(stderr, "error: filename too long.\n");
+        return -1;
+    }
 
     f = fopen(filename, "w");
     if (f == NULL) {
@@ -309,15 +347,26 @@ int create_gcode(const char *ofilename)
     return 0;
 }
 
-int generate_novamaker_files(const char *ofilename)
+/**
+ * Creates the Nova3d files like created by NovaMaker 1.4.4.
+ *
+ * @param tmpdir The Chitubox temporary directory. This temp directory contains
+ *   the input files. We also create our files in this dir. It will get zipped
+ *   by Chitubox after conversion.
+ * @param ofilename The output filename that was chosen by the user. This contains
+ *   the file extension (.CWS) that we configured in plugin.json.
+ *
+ * @return Zero on success.
+ */
+int generate_novamaker_files(const char *tmpdir, const char *ofilename)
 {
     int ret = 0;
     char outputdir[PATH_MAX];
     char *sep;
 
     /* create folder name from ofilename */
-    strncpy(outputdir, ofilename, sizeof(outputdir));
-    outputdir[PATH_MAX - 1] = 0;
+    ret = strlcpy(outputdir, ofilename, sizeof(outputdir));
+    if (ret < 0) return ret;
     sep = strrchr(outputdir, '/');
     if (sep == NULL) return -1;
     *sep = 0;
@@ -325,7 +374,7 @@ int generate_novamaker_files(const char *ofilename)
     ret = create_slice_conf(outputdir);
     if (ret != 0) return ret;
 
-    ret = create_gcode(ofilename);
+    ret = create_gcode(tmpdir, ofilename);
     if (ret != 0) return ret;
 
     return ret;
@@ -333,7 +382,7 @@ int generate_novamaker_files(const char *ofilename)
 
 int main(int argc, char *argv[])
 {
-    const char *idir;
+    const char *tmpdir;
     const char *ofilename;
     char ifilename[PATH_MAX];
     int ret;
@@ -343,9 +392,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    idir = argv[1];
+    tmpdir = argv[1];
     ofilename = argv[2];
-    ret = snprintf(ifilename, sizeof(ifilename), "%s/run.gcode", idir);
+    ret = snprintf(ifilename, sizeof(ifilename), "%s/run.gcode", tmpdir);
     if (ret >= (int)sizeof(ifilename)) {
         fprintf(stderr, "error: filename too long.\n");
         exit(EXIT_FAILURE);
@@ -358,7 +407,7 @@ int main(int argc, char *argv[])
         THROW();
     }
 
-    ret = generate_novamaker_files(ofilename);
+    ret = generate_novamaker_files(tmpdir, ofilename);
     if (ret != 0) {
         fprintf(stderr, "error: failed to generate NovaMaker files.\n");
         THROW();
