@@ -390,17 +390,8 @@ int rename_png_files(const char *tmpdir, const char *projectname)
 int generate_novamaker_files(const char *tmpdir, const char *ofilename)
 {
     int ret = 0;
-    char outputdir[PATH_MAX];
     char basename[PATH_MAX];
     const char *projectname;
-    char *sep;
-
-    /* create folder name from ofilename */
-    ret = strlcpy(outputdir, ofilename, sizeof(outputdir));
-    if (ret < 0) return ret;
-    sep = strrchr(outputdir, '/');
-    if (sep == NULL) return -1;
-    *sep = 0;
 
     /* extract project name from ofilename */
     ret = strlcpy(basename, ofilename, sizeof(basename));
@@ -410,7 +401,7 @@ int generate_novamaker_files(const char *tmpdir, const char *ofilename)
     }
     projectname = my_basename(basename);
 
-    ret = create_slice_conf(outputdir);
+    ret = create_slice_conf(tmpdir);
     if (ret != 0) return ret;
 
     ret = create_gcode(tmpdir, projectname);
