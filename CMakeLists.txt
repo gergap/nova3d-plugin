@@ -1,5 +1,5 @@
 project(nova3d_plugin C)
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.0)
 
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "^(GNU|Clang)$")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wformat=2 -Wunknown-pragmas -Wstrict-aliasing")
