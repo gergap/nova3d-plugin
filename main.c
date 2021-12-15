@@ -70,6 +70,7 @@ static int parse_param(char *line)
     return map_add(&g_map, name, value);
 }
 
+/** Parse Chitubox GCode */
 int parse_gcode(const char *filename)
 {
     char *ret;
@@ -153,6 +154,7 @@ static double param_float(const char *name)
     return strtod(value, NULL);
 }
 
+/** Create Nova3d slice.conf  */
 int create_slice_conf(const char *dir)
 {
     char filename[PATH_MAX];
@@ -196,6 +198,7 @@ int create_slice_conf(const char *dir)
     return 0;
 }
 
+/** Create Nova3d GCode */
 int create_gcode(const char *ofilename)
 {
     char filename[PATH_MAX];
@@ -212,6 +215,7 @@ int create_gcode(const char *ofilename)
     float liftHeight               = param_float("normalLayerLiftHeight");
     float layerHeight              = param_float("layerHeight");
 
+    /* create GCode filename */
     strncpy(filename, ofilename, sizeof(filename));
     filename[PATH_MAX - 1] = 0;
     /* change file extension */
