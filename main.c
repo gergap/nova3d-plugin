@@ -236,14 +236,12 @@ static char *my_basename(char *filename)
 }
 
 /** Create Nova3d GCode */
-int create_gcode(const char *tmpdir, const char *ofilename)
+int create_gcode(const char *tmpdir, const char *projectname)
 {
-    char basename[PATH_MAX];
     char filename[PATH_MAX];
     FILE *f;
     time_t now = time(NULL);
     const char *timestamp = ctime(&now);
-    const char *projectname; /* used also in GCODE filename */
     unsigned int i;
     unsigned int wait_time;
     unsigned int num_slices        = param_uint("totalLayer");
@@ -255,14 +253,6 @@ int create_gcode(const char *tmpdir, const char *ofilename)
     int ret;
 
     /* create GCode filename */
-    ret = strlcpy(basename, ofilename, sizeof(basename));
-    if (ret < 0) {
-        fprintf(stderr, "error: filename too long.\n");
-        return -1;
-    }
-    projectname = my_basename(basename);
-
-    /* create gcode filename */
     ret = snprintf(filename, sizeof(filename), "%s/%s.gcode", tmpdir, projectname);
     if (ret >= (int)sizeof(filename)) {
         fprintf(stderr, "error: filename too long.\n");
@@ -347,6 +337,45 @@ int create_gcode(const char *tmpdir, const char *ofilename)
     return 0;
 }
 
+int rename_png_files(const char *tmpdir, const char *projectname)
+{
+    unsigned int num_slices = param_uint("totalLayer");
+    unsigned int i;
+    char filename1[PATH_MAX];
+    char filename2[PATH_MAX];
+    char fmt[32];
+    int digits;
+    int ret;
+
+    if (num_slices < 10) {
+        digits = 1;
+    } else if (num_slices < 100) {
+        digits = 2;
+    } else if (num_slices < 1000) {
+        digits = 3;
+    } else if (num_slices < 10000) {
+        digits = 4;
+    } else {
+        digits = 5;
+    }
+
+    /* create format string with correct padding */
+    snprintf(fmt, sizeof(fmt), "%%s/%%s%%0%uu.png", digits);
+
+    for (i = 0; i < num_slices; ++i) {
+        snprintf(filename1, sizeof(filename1), "%s/%u.png", tmpdir, i + 1);
+        snprintf(filename2, sizeof(filename2), fmt, tmpdir, projectname, i);
+
+        ret = rename(filename1, filename2);
+        if (ret != 0) {
+            fprintf(stderr, "error: failed to rename file '%s' -> '%s'.\n", filename1, filename2);
+            return ret;
+        }
+    }
+
+    return 0;
+}
+
 /**
  * Creates the Nova3d files like created by NovaMaker 1.4.4.
  *
@@ -362,6 +391,8 @@ int generate_novamaker_files(const char *tmpdir, const char *ofilename)
 {
     int ret = 0;
     char outputdir[PATH_MAX];
+    char basename[PATH_MAX];
+    const char *projectname;
     char *sep;
 
     /* create folder name from ofilename */
@@ -371,10 +402,21 @@ int generate_novamaker_files(const char *tmpdir, const char *ofilename)
     if (sep == NULL) return -1;
     *sep = 0;
 
+    /* extract project name from ofilename */
+    ret = strlcpy(basename, ofilename, sizeof(basename));
+    if (ret < 0) {
+        fprintf(stderr, "error: filename too long.\n");
+        return -1;
+    }
+    projectname = my_basename(basename);
+
     ret = create_slice_conf(outputdir);
     if (ret != 0) return ret;
 
-    ret = create_gcode(tmpdir, ofilename);
+    ret = create_gcode(tmpdir, projectname);
+    if (ret != 0) return ret;
+
+    ret = rename_png_files(tmpdir, projectname);
     if (ret != 0) return ret;
 
     return ret;
