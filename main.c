@@ -163,7 +163,7 @@ int create_slice_conf(const char *dir)
     float ppm = 19.324f; /* pixel per mm ? */
 
     ret = snprintf(filename, sizeof(filename), "%s/slice.conf", dir);
-    if (ret >= sizeof(filename)) {
+    if (ret >= (int)sizeof(filename)) {
         fprintf(stderr, "error: filename too long.\n");
         return -1;
     }
@@ -203,16 +203,14 @@ int create_gcode(const char *ofilename)
     time_t now = time(NULL);
     const char *timestamp = ctime(&now);
     char *ext;
-    int ret;
-    float ppm = 19.324f; /* pixel per mm ? */
     unsigned int i;
-    unsigned int num_slices = param_uint("totalLayer");
-    unsigned int num_bottom_layers = param_uint("bottomLayerCount");
     unsigned int wait_time;
-    unsigned int speed_up = param_uint("normalLayerLiftSpeed");
-    unsigned int speed_down = param_uint("normalDropSpeed");
-    float liftHeight = param_float("normalLayerLiftHeight");
-    float layerHeight = param_float("layerHeight");
+    unsigned int num_slices        = param_uint("totalLayer");
+    unsigned int num_bottom_layers = param_uint("bottomLayerCount");
+    unsigned int speed_up          = param_uint("normalLayerLiftSpeed");
+    unsigned int speed_down        = param_uint("normalDropSpeed");
+    float liftHeight               = param_float("normalLayerLiftHeight");
+    float layerHeight              = param_float("layerHeight");
 
     strncpy(filename, ofilename, sizeof(filename));
     filename[PATH_MAX - 1] = 0;
@@ -344,7 +342,7 @@ int main(int argc, char *argv[])
     idir = argv[1];
     ofilename = argv[2];
     ret = snprintf(ifilename, sizeof(ifilename), "%s/run.gcode", idir);
-    if (ret >= sizeof(ifilename)) {
+    if (ret >= (int)sizeof(ifilename)) {
         fprintf(stderr, "error: filename too long.\n");
         exit(EXIT_FAILURE);
     }

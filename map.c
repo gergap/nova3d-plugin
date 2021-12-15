@@ -130,7 +130,7 @@ const char *map_lookup(struct map *m, const char *key)
         return NULL;
     }
 
-    result = bsearch(&key, m->elements, m->num_elements, sizeof(*m->elements), map_pair_compare);
+    result = bsearch(&search_key, m->elements, m->num_elements, sizeof(*m->elements), map_pair_compare);
     if (result == NULL) return NULL;
 
     return result->value;

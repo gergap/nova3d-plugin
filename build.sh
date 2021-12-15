@@ -14,4 +14,5 @@ ninja install
 cpack .
 # rename plugin to what Chitubox expects
 cp nova3d_plugin.zip $BASEDIR/nova3d_plugin.CHplugin
+echo "Successfully created nova3d_plugin.CHplugin"
 
