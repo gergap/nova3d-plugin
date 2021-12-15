@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>
 #include "map.h"
 
 #ifdef _MSC_VER
@@ -143,6 +144,9 @@ int parse_gcode(const char *filename)
     } while (!feof(f));
 
     fclose(f);
+
+    /* delete file */
+    unlink(filename);
 
     map_sort(&g_map);
 
@@ -334,6 +338,7 @@ int create_gcode(const char *tmpdir, const char *projectname)
     fprintf(f, ";<Completed>\n");
 
     fclose(f);
+
     return 0;
 }
 
