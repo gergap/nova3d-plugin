@@ -1,0 +1,16 @@
+{
+    "info":{
+        "name":"Nova3D_plugin" ,
+        "description":"Nova3D Format",
+        "author":"Gerhard G.",
+        "email":"",
+        "type":"outputSlicer",
+        "winExecPath":"",
+        "macExecPath":"",
+        "linuxExecPath":"nova3d_plugin",
+        "inputSuffix":"zip_raw_png_32b",
+        "outputSuffix":"CWS",
+        "detail":"Converts output into a format suitable for Nova3D Elfin2",
+        "requireVersion":"V1.4.1"
+    }
+}
