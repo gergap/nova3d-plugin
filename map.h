@@ -24,6 +24,7 @@
 #include <stdbool.h>
 
 struct map_pair;
+/** A simple map implementation to store key/value pairs in string format. */
 struct map {
     struct map_pair *elements;  /**< array of elements */
     unsigned int size_elements; /**< array size */
