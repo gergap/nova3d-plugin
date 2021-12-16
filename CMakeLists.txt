@@ -18,7 +18,7 @@ endif()
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 # create our simple C binary
-add_executable(nova3d_plugin main.c map.c)
+add_executable(nova3d_plugin main.c map.c stringutils.c)
 
 # enable CMake testing framework
 include(CTest)

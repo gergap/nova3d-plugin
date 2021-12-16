@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include "map.h"
+#include "stringutils.h"
 
 #ifdef _MSC_VER
 /* MSVC compatibility stuff */
@@ -55,35 +56,6 @@ void version(void)
     printf("but WITHOUT ANY WARRANTY; without even the implied warranty of\n");
     printf("MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n");
     printf("LICENSE file for more details.\n");
-}
-
-/* like Perl's chomp() function */
-static void chomp(char *str)
-{
-    size_t len = strlen(str);
-    if (str[len - 1] == '\n') {
-        str[len - 1] = 0;
-    }
-}
-
-/** Better version of strncat which ensures the string is terminated.
- * @param dst The destination buffer.
- * @param src The source string to copy. Must be zero terminated.
- * @param dst_len Length of \c dst in bytes.
- * @return Number of bytes copied on success excluding the terminating null byte, -1 if the string
- * was truncated.
- */
-static int strlcpy(char *dst, const char *src, size_t dst_len)
-{
-    size_t len = strlen(src);
-    if (len > (dst_len - 1)) {
-        memcpy(dst, src, dst_len - 1);
-        dst[dst_len - 1] = 0; /* terminate string */
-        return -1;
-    }
-    memcpy(dst, src, len + 1);
-
-    return len;
 }
 
 /** parses GCODE header parameter from Chitubox.
@@ -233,25 +205,6 @@ int create_slice_conf(const char *dir)
     fclose(f);
 
     return 0;
-}
-
-/* My version of a basename function. It removes file extension and directories.
- * E.g. "foo/bar.ext" -> "bar".
- * This function modifies the filename and returns a pointer to the basename inside filename.
- * Create a copy before calling this function.
- */
-static char *my_basename(char *filename)
-{
-    char *ext = strrchr(filename, '.');
-    if (ext == NULL) return NULL;
-    *ext = 0; /* cut off extension */
-
-    /* find last slash */
-    ext = strrchr(filename, '/');
-    if (ext == NULL) return filename; /* there is no separator */
-    ext++;
-
-    return ext;
 }
 
 /** Create Nova3d GCode */
