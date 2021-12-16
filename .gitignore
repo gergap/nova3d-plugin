@@ -1,0 +1,8 @@
+.settings.vim
+.breakpoints.gdb
+.gdbinit
+tags
+bld
+bldWin
+dist
+distWin
