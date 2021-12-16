@@ -384,7 +384,14 @@ int rename_png_files(const char *tmpdir, const char *projectname)
 
     for (i = 0; i < num_slices; ++i) {
         snprintf(filename1, sizeof(filename1), "%s/%u.png", tmpdir, i + 1);
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-nonliteral"
+        /* in general this warning is a good idea, because you should not use
+         * string variables without input validation as a format string. In this
+         * case we construct it very specifically and we know it's correct.
+         */
         snprintf(filename2, sizeof(filename2), fmt, tmpdir, projectname, i);
+#pragma GCC diagnostic pop
 
         ret = rename(filename1, filename2);
         if (ret != 0) {
