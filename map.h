@@ -25,10 +25,10 @@
 
 struct map_pair;
 struct map {
-    struct map_pair *elements; /**< array of elements */
+    struct map_pair *elements;  /**< array of elements */
     unsigned int size_elements; /**< array size */
-    unsigned int num_elements; /**< number of used elements */
-    bool sorted; /**< sorted state */
+    unsigned int num_elements;  /**< number of used elements */
+    bool sorted;                /**< sorted state */
 };
 
 int map_init(struct map *m, unsigned int init_size);
@@ -39,4 +39,3 @@ void map_sort(struct map *m);
 const char *map_lookup(struct map *m, const char *key);
 
 #endif /* __MAP_H__ */
-

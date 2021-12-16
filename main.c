@@ -23,13 +23,14 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+
 #include "map.h"
 
 #ifdef _MSC_VER
 /* MSVC compatibility stuff */
-# define PATH_MAX MAX_PATH
+#define PATH_MAX MAX_PATH
 #else
-# include <limits.h>
+#include <limits.h>
 #endif
 
 struct map g_map;
@@ -56,7 +57,8 @@ static void chomp(char *str)
  * @param dst The destination buffer.
  * @param src The source string to copy. Must be zero terminated.
  * @param dst_len Length of \c dst in bytes.
- * @return Number of bytes copied on success excluding the terminating null byte, -1 if the string was truncated.
+ * @return Number of bytes copied on success excluding the terminating null byte, -1 if the string
+ * was truncated.
  */
 static int strlcpy(char *dst, const char *src, size_t dst_len)
 {
@@ -182,7 +184,7 @@ int create_slice_conf(const char *dir)
 {
     char filename[PATH_MAX];
     FILE *f;
-    time_t now = time(NULL);
+    time_t now            = time(NULL);
     const char *timestamp = ctime(&now);
     int ret;
     float ppm = 19.324f; /* pixel per mm ? */
@@ -244,7 +246,7 @@ int create_gcode(const char *tmpdir, const char *projectname)
 {
     char filename[PATH_MAX];
     FILE *f;
-    time_t now = time(NULL);
+    time_t now            = time(NULL);
     const char *timestamp = ctime(&now);
     unsigned int i;
     unsigned int wait_time;
@@ -320,15 +322,15 @@ int create_gcode(const char *tmpdir, const char *projectname)
         } else {
             wait_time = param_uint("normalExposureTime");
         }
-        wait_time *= 1000; /* ms */
-        fprintf(f, ";<Slice> %u\n", i);             /**< image/slice index */
-        fprintf(f, "M106 S255\n");                  /**< enable UV light */
-        fprintf(f, ";<Delay> %u\n", wait_time);     /**< wait exposuretime [ms] */
-        fprintf(f, "M106 S0\n");                    /**< disable UV light */
-        fprintf(f, ";<Slice> Blank\n");             /**< show blank image */
-        fprintf(f, "G1 Z%.3f F%u\n", liftHeight, speed_up);    /**< move up */
+        wait_time *= 1000;                                  /* ms */
+        fprintf(f, ";<Slice> %u\n", i);                     /**< image/slice index */
+        fprintf(f, "M106 S255\n");                          /**< enable UV light */
+        fprintf(f, ";<Delay> %u\n", wait_time);             /**< wait exposuretime [ms] */
+        fprintf(f, "M106 S0\n");                            /**< disable UV light */
+        fprintf(f, ";<Slice> Blank\n");                     /**< show blank image */
+        fprintf(f, "G1 Z%.3f F%u\n", liftHeight, speed_up); /**< move up */
         fprintf(f, "G1 Z-%.3f F%u\n", liftHeight - layerHeight, speed_down); /**< move down */
-        fprintf(f, ";<Delay> 6800\n\n");            /**< wait 6.8s (always, why?) */
+        fprintf(f, ";<Delay> 6800\n\n"); /**< wait 6.8s (always, why?) */
     }
 
     /* gcode end code */
@@ -430,9 +432,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    tmpdir = argv[1];
+    tmpdir    = argv[1];
     ofilename = argv[2];
-    ret = snprintf(ifilename, sizeof(ifilename), "%s/run.gcode", tmpdir);
+    ret       = snprintf(ifilename, sizeof(ifilename), "%s/run.gcode", tmpdir);
     if (ret >= (int)sizeof(ifilename)) {
         fprintf(stderr, "error: filename too long.\n");
         exit(EXIT_FAILURE);
@@ -458,5 +460,3 @@ CATCH:
 
     return 0;
 }
-
-

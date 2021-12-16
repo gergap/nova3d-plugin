@@ -19,10 +19,11 @@
  *****************************************************************************/
 
 #include "map.h"
+
 #include <malloc.h>
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 
 struct map_pair {
     char *key;
@@ -49,7 +50,7 @@ static void map_pair_clear(struct map_pair *el)
     if (el->key) free(el->key);
     if (el->value) free(el->value);
 
-    el->key = NULL;
+    el->key   = NULL;
     el->value = NULL;
 }
 
@@ -69,7 +70,7 @@ int map_init(struct map *m, unsigned int init_size)
     m->elements = malloc(init_size * sizeof(struct map_pair));
     if (m->elements == NULL) return -1;
     m->size_elements = init_size;
-    m->num_elements = 0;
+    m->num_elements  = 0;
 
     return 0;
 }
@@ -82,10 +83,10 @@ int map_clear(struct map *m)
         map_pair_clear(&m->elements[i]);
     }
     free(m->elements);
-    m->elements = NULL;
-    m->num_elements = 0;
+    m->elements      = NULL;
+    m->num_elements  = 0;
     m->size_elements = 0;
-    m->sorted = false;
+    m->sorted        = false;
 
     return 0;
 }
@@ -123,7 +124,7 @@ void map_sort(struct map *m)
  */
 const char *map_lookup(struct map *m, const char *key)
 {
-    const struct map_pair search_key = { (char*)key, NULL };
+    const struct map_pair sk = { (char *)key, NULL };
     const struct map_pair *result;
 
     if (!m->sorted) {
@@ -131,9 +132,8 @@ const char *map_lookup(struct map *m, const char *key)
         return NULL;
     }
 
-    result = bsearch(&search_key, m->elements, m->num_elements, sizeof(*m->elements), map_pair_compare);
+    result = bsearch(&sk, m->elements, m->num_elements, sizeof(*m->elements), map_pair_compare);
     if (result == NULL) return NULL;
 
     return result->value;
 }
-

@@ -1,0 +1,174 @@
+---
+BasedOnStyle: Google
+IndentWidth: 4
+TabWidth: 8
+UseTab: Never
+ColumnLimit: 100
+BreakBeforeBraces: Linux
+
+# Align consecutive trailing comments
+AlignTrailingComments: true
+
+# Allow short ifs without linebreak
+# if (arg == NULL) return -1;
+# instead of
+# if (arg == NULL)
+#     return -1;
+AllowShortIfStatementsOnASingleLine: true
+
+# Allow short function implementation on single line only for empty functions
+# void foo() {}
+AllowShortFunctionsOnASingleLine: Empty
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+#AllowShortEnumsOnASingleLine: false
+
+# Align pointer to the right
+# int *a;
+PointerAlignment: Right
+DerivePointerAlignment: false
+
+# never break string literals (e.g. traces)
+# We want to be able to grep for them
+BreakStringLiterals: false
+
+# Don't insert a space after a cast
+# x = (int32)y;    not    x = (int32) y;
+SpaceAfterCStyleCast: false
+
+# Insert spaces before and after assignment operators
+# int a = 5;    not    int a=5;
+# a += 42;             a+=42;
+SpaceBeforeAssignmentOperators: true
+
+# Put a space before opening parentheses only after control statement keywords.
+# void f() {
+#   if (true) {
+#     f();
+#   }
+# }
+SpaceBeforeParens: ControlStatements
+
+# No spaces in angles
+# true:                                  false:
+# static_cast< int >(arg);       vs.     static_cast<int>(arg);
+# std::function< void(int) > fct;        std::function<void(int)> fct;
+SpacesInAngles: false
+
+# Don't insert spaces inside empty '()'
+SpaceInEmptyParentheses: false
+
+# The number of spaces before trailing line comments (// - comments).
+# This does not affect trailing block comments (/* - comments).
+SpacesBeforeTrailingComments: 1
+
+# Don't insert spaces in casts
+# x = (int32) y;    not    x = ( int32 ) y;
+SpacesInCStyleCastParentheses: false
+
+# Don't insert spaces inside container literals
+# var arr = [1, 2, 3];    not    var arr = [ 1, 2, 3 ];
+SpacesInContainerLiterals: true
+
+# Don't insert spaces inside square brackets
+# true:                                  false:
+# int a[ 5 ];                    vs.     int a[5];
+# std::unique_ptr<int[]> foo() {} // Won't be affected
+SpacesInSquareBrackets: true
+
+# Don't insert spaces after '(' or before ')'
+# f(arg);    not    f( arg );
+SpacesInParentheses: false
+
+# Don't insert spaces after '[' or before ']'
+# int a[5];    not    int a[ 5 ];
+SpacesInSquareBrackets: false
+
+# add spaces inside braces (arrays)
+# We are writing C code like e.g. int int_array[3] = { 1, 2, 3 };
+# and not this hot new C++11 stuff
+# true:                                  false:
+# vector<int> x{1, 2, 3, 4};     vs.     vector<int> x{ 1, 2, 3, 4 };
+# vector<T> x{{}, {}, {}, {}};           vector<T> x{ {}, {}, {}, {} };
+# f(MyMap[{composite, key}]);            f(MyMap[{ composite, key }]);
+# new int[3]{1, 2, 3};                   new int[3]{ 1, 2, 3 };
+Cpp11BracedListStyle: false
+
+#IndentPPDirectives : AfterHash #this uses IdentWidth which looks ugly, there is not IndentPPWidth yet
+IndentPPDirectives: None # se we better disable it for now
+
+# If a function call or braced initializer list doesn’t fit on a line, allow putting all arguments onto the next line, even if BinPackArguments is false.
+AllowAllArgumentsOnNextLine: true
+# If the function declaration doesn’t fit on a line, allow putting all parameters of a function declaration onto the next line even if BinPackParameters is false.
+AllowAllParametersOfDeclarationOnNextLine: false
+# we don't want bin packing
+ExperimentalAutoDetectBinPacking: false
+BinPackArguments: false
+BinPackParameters: false
+
+# Align parameters on the open bracket
+# Align:
+# someLongFunction(argument1,
+#                  argument2,
+#                  argument3);
+# DontAlign:
+# someLongFunction(argument1,
+#         argument2,
+#         argument3);
+# AlwaysBreak: Always break after an open bracket, if the parameters don’t fit on a single line, e.g.:
+# someLongFunction(
+#         argument1,
+#         argument2);
+# When breaking argument lists, put all arguments on the next line,
+# to have them compact together, and don't visually break them.
+AlignAfterOpenBracket: AlwaysBreak
+# Indentation with for following arguments
+ContinuationIndentWidth: 8
+
+# Don't align consecutive assignments
+# int aaaa = 12;
+# int b = 14;
+AlignConsecutiveAssignments: true
+
+# Don't align consecutive declarations
+# int aaaa = 12;
+# double b = 3.14;
+AlignConsecutiveDeclarations: false
+
+# Don't align escaped newlines, put \ as far left as possible
+# #define A \
+#   int aaaa; \
+#   int b; \
+#   int cccccccc;
+AlignEscapedNewlines: DontAlign
+
+# Use the same indentation level as for the switch statement.
+# Switch statement body is always indented one level more than case labels.
+IndentCaseLabels: false
+
+# Break after operators
+# int valuve = aaaaaaaaaaaaa +
+#              bbbbbb -
+#              ccccccccccc;
+BreakBeforeBinaryOperators: None
+BreakBeforeTernaryOperators: false
+
+# The maximum number of consecutive empty lines to keep.
+MaxEmptyLinesToKeep: 1
+
+# No empty line at the start of a block.
+KeepEmptyLinesAtTheStartOfBlocks: false
+
+# Penalties
+# This decides what order things should be done if a line is too long
+PenaltyBreakAssignment: 10
+PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyBreakComment: 10
+PenaltyBreakFirstLessLess: 0
+PenaltyBreakString: 10
+# if this is too low, the AlwaysBreak settings above does not work
+PenaltyExcessCharacter: 10
+PenaltyReturnTypeOnItsOwnLine: 600
+
