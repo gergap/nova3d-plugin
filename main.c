@@ -18,6 +18,7 @@
  * Boston, MA  02110-1301, USA.EOF
  *****************************************************************************/
 
+#include <config.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,7 +42,19 @@ struct map g_map;
 
 void usage(const char *appname)
 {
-    printf("Usage: %s <input-dir> <output-filename>\n", appname);
+    printf("Usage: %s [options] <input-dir> <output-filename>\n", appname);
+    printf("Options:\n");
+    printf("  -h: Shows this help\n");
+    printf("  -v: Prints version info\n");
+}
+
+void version(void)
+{
+    printf("%s V%s  Copyright (C) 2021  Gerhard Gappmeier\n", APPID, VERSION);
+    printf("This program is distributed in the hope that it will be useful,\n");
+    printf("but WITHOUT ANY WARRANTY; without even the implied warranty of\n");
+    printf("MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n");
+    printf("LICENSE file for more details.\n");
 }
 
 /* like Perl's chomp() function */
@@ -427,7 +440,28 @@ int main(int argc, char *argv[])
     char ifilename[PATH_MAX];
     int ret;
 
+    /* poor man's getopt */
+    if (argc == 2 && argv[1][0] == '-') {
+        /* handle some basic switches */
+        switch (argv[1][1]) {
+        case 'h':
+            usage(argv[0]);
+            exit(EXIT_SUCCESS);
+            break;
+        case 'v':
+            version();
+            exit(EXIT_SUCCESS);
+            break;
+        default:
+            fprintf(stderr, "error: invalid option.\n");
+            usage(argv[0]);
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    /* we expect the two chitubox arguments */
     if (argc != 3) {
+        fprintf(stderr, "error: missing arguments.\n");
         usage(argv[0]);
         exit(EXIT_FAILURE);
     }

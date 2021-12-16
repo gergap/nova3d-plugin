@@ -1,12 +1,26 @@
 project(nova3d_plugin C)
 cmake_minimum_required(VERSION 3.0)
+# Plugin version information
+set(VERSION "1.0.0")
+# process version info
+string(REGEX MATCHALL "[0-9]+" VERSION_PARTS ${VERSION})
+list(GET VERSION_PARTS 0 VERSION_MAJOR)
+list(GET VERSION_PARTS 1 VERSION_MINOR)
+list(GET VERSION_PARTS 2 VERSION_PATCH)
+configure_file(config.h.in config.h)
 
 if ("${CMAKE_C_COMPILER_ID}" MATCHES "^(GNU|Clang)$")
+    # increase warning level
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wformat=2 -Wunknown-pragmas -Wstrict-aliasing")
 endif()
 
+# add current binarr/source dir to search path
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+# create our simple C binary
 add_executable(nova3d_plugin main.c map.c)
 
+# enable CMake testing framework
 include(CTest)
 enable_testing()
 
@@ -16,8 +30,16 @@ add_test(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 )
 
-install(FILES plugin.json DESTINATION .)
+# install targets
+install(FILES plugin.json LICENSE DESTINATION .)
 install(TARGETS nova3d_plugin DESTINATION .)
+
+# Create package using CPack
+set(CPACK_PACKAGE_VENDOR "Gerhard G.")
+set(CPACK_PACKAGE_VERSION_MAJOR ${VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${VERSION_PATCH})
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/LICENSE")
 
 set(CPACK_OUTPUT_FILE_PREFIX "")
 set(CPACK_GENERATOR "ZIP" CACHE STRING "Generators to support. semi-colon delimited list")

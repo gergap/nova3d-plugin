@@ -1,0 +1,10 @@
+#ifndef CONFIG_H_IN
+#define CONFIG_H_IN
+
+#cmakedefine VERSION "@VERSION@"
+#cmakedefine VERSION_MAJOR @VERSION_MAJOR@
+#cmakedefine VERSION_MINOR @VERSION_MINOR@
+#cmakedefine VERSION_PATCH @VERSION_PATCH@
+
+#endif /* end of include guard: CONFIG_H_IN */
+
