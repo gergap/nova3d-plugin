@@ -6,13 +6,13 @@ DISTDIR=$BASEDIR/dist
 BUILD_TYPE=MinSizeRel
 GENERATOR="CodeBlocks - Ninja"
 
-mkdir -p bld
-cd bld
+if [ "$1" == "clean" ]; then
+    rm -rf $BLDDIR
+fi
+
+mkdir -p $BLDDIR
+cd $BLDDIR
 cmake -G"$GENERATOR" -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_INSTALL_PREFIX=$DISTDIR $BASEDIR
 ninja
 ninja install
-cpack .
-# rename plugin to what Chitubox expects
-cp nova3d_plugin.zip $BASEDIR/nova3d_plugin.CHplugin
-echo "Successfully created nova3d_plugin.CHplugin"
-
+ninja package_plugin
