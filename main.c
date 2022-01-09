@@ -216,6 +216,8 @@ int create_gcode(const char *tmpdir, const char *projectname)
     const char *timestamp = ctime(&now);
     unsigned int i;
     unsigned int wait_time;
+    unsigned int wait_before_expo_ms = param_uint("lightOffTime");
+    unsigned int move_time;
     unsigned int num_slices        = param_uint("totalLayer");
     unsigned int num_bottom_layers = param_uint("bottomLayerCount");
     unsigned int speed_up          = param_uint("normalLayerLiftSpeed");
@@ -289,6 +291,8 @@ int create_gcode(const char *tmpdir, const char *projectname)
             wait_time = param_uint("normalExposureTime");
         }
         wait_time *= 1000;                                  /* ms */
+        move_time = 60 * liftHeight / speed_up; /* [s] = [mm] / [mm/min] */
+        move_time += 60 * (liftHeight - layerHeight) / speed_down; /* [s] = [mm] / [mm/min] */
         fprintf(f, ";<Slice> %u\n", i);                     /**< image/slice index */
         fprintf(f, "M106 S255\n");                          /**< enable UV light */
         fprintf(f, ";<Delay> %u\n", wait_time);             /**< wait exposuretime [ms] */
@@ -296,7 +300,7 @@ int create_gcode(const char *tmpdir, const char *projectname)
         fprintf(f, ";<Slice> Blank\n");                     /**< show blank image */
         fprintf(f, "G1 Z%.3f F%u\n", liftHeight, speed_up); /**< move up */
         fprintf(f, "G1 Z-%.3f F%u\n", liftHeight - layerHeight, speed_down); /**< move down */
-        fprintf(f, ";<Delay> 6800\n\n"); /**< wait 6.8s (always, why?) */
+        fprintf(f, ";<Delay> %u\n\n", (move_time + wait_before_expo_ms) * 1000);
     }
 
     /* gcode end code */
