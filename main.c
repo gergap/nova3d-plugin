@@ -152,7 +152,7 @@ static unsigned int param_uint(const char *name)
     return strtoul(value, NULL, 10);
 }
 
-/** returns parsed parameter as unsigned int.
+/** returns parsed parameter as double.
  * @param name Parameter name as defined in Chitubox GCode header.
  * @return Parameter value, or 0 not parameter not found.
  */
