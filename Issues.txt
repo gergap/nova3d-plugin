@@ -1,0 +1,7 @@
+Some notes I figured out while testing.
+
+slice.conf
+
+* Units in comments are mm/s when mm/min is meant
+* Values in slice.conf seem to have no effect, also not the comments in gcode header,
+  instead the ;Delay comments in gcode seem to have an effect on real exposure time
